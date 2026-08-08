@@ -1,4 +1,4 @@
-package com.cesde.coursemanagement.application.exceptions;
+package com.cesde.coursemanagement.domain.exception;
 
 public class CourseNotFoundException extends BusinessException {
 
