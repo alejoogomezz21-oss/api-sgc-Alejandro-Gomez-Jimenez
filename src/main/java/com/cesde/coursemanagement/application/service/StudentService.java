@@ -11,27 +11,27 @@ public class StudentService implements StudentRepository {
 
     private final StudentRepository studentRepository;
 
-    public StudentService(StudentRepository studentRepository, StudentRepository studentRepository1) {
+    public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
-
     @Override
     public Student save(Student student) {
-        if (studentRepository.existsByStudentId(student.getId())) {
-            throw new StudentNotFoundException("Student with id: " + student.getId() + " not found");
+        if (student.getId() != null && studentRepository.existsByStudentId(student.getId())) {
+            throw new RuntimeException("Student with id: " + student.getId() + " already exists");
         }
 
         if (studentRepository.existsByEmail(student.getEmail())) {
-            throw new StudentNotFoundException("Student with email: " + student.getEmail() + " not found");
+            throw new RuntimeException("Student with email: " + student.getEmail() + " already exists");
         }
+
         return studentRepository.save(student);
     }
 
     @Override
     public Optional<Student> findByStudentId(Long studentId) {
         if (studentRepository.findByStudentId(studentId).isEmpty()) {
-            throw new RuntimeException("no Student with student id " + studentId);
+            throw new StudentNotFoundException("no Student with student id " + studentId);
         }
         return studentRepository.findByStudentId(studentId);
     }
@@ -44,42 +44,51 @@ public class StudentService implements StudentRepository {
     @Override
     public List<Student> findAll() {
         if (studentRepository.findAll().isEmpty()) {
-            throw new StudentNotFoundException("");
+            throw new StudentNotFoundException("No students found");
         }
         return studentRepository.findAll();
     }
 
     @Override
     public boolean existsByStudentId(Long studentId) {
-        if (studentRepository.existsByStudentId(studentId)) {
+        if (!studentRepository.existsByStudentId(studentId)) {
             throw new StudentNotFoundException("Student with id: " + studentId + " not found");
         }
         return studentRepository.existsByStudentId(studentId);
     }
 
     @Override
+    public boolean existsByEmail(String email) {
+        if (!studentRepository.existsByEmail(email)) {
+            throw new StudentNotFoundException("Student with email: " + email + " not found");
+        }
+        return studentRepository.existsByEmail(email);
+    }
+
+    @Override
     public void deleteById(Long id) {
-        if (studentRepository.existsByStudentId(id)) {
+        if (!studentRepository.existsByStudentId(id)) {
             throw new StudentNotFoundException("Student with id: " + id + " not found");
         }
         studentRepository.deleteById(id);
-
     }
 
     @Override
     public Optional<Student> update(Student student) {
+        Student existingStudent = studentRepository.findByStudentId(student.getId())
+                .orElseThrow(() -> new StudentNotFoundException("Estudiante no encontrado con id: " + student.getId()));
 
-        if (studentRepository.existsByStudentId(student.getId())) {
-            throw new StudentNotFoundException("Student with id: " + student.getId() + " not found");
+        if (!existingStudent.getEmail().equals(student.getEmail())) {
+            if (studentRepository.existsByEmail(student.getEmail())) {
+                throw new IllegalArgumentException("El correo ingresado ya pertenece a otro estudiante.");
+            }
         }
-        return studentRepository.update(student);
-    }
 
-    @Override
-    public boolean existsByEmail(String email) {
-        if (studentRepository.existsByEmail(email)) {
-            throw new StudentNotFoundException("Student with email: " + email + " not found");
-        }
-        return studentRepository.existsByEmail(email);
+        existingStudent.setFirstName(student.getFirstName());
+        existingStudent.setLastName(student.getLastName());
+        existingStudent.setEmail(student.getEmail());
+        existingStudent.setBirthDate(student.getBirthDate());
+
+        return studentRepository.update(existingStudent);
     }
 }
