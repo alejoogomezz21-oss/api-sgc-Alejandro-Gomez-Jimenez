@@ -1,11 +1,37 @@
 package com.cesde.coursemanagement.domain.models;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
+
+@Entity
+@Table(name = "courses")
 public class Course {
-        private Long id;
-        private String code;
-        private String name;
-        private String description;
-        private Integer maxCapacity;
+
+    @OneToMany(mappedBy = "course")
+    private List<Enrollment> enrollments;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank(message = "El código del curso no puede estar vacío")
+    @Column(unique = true, nullable = false, length = 50)
+    private String code;
+
+    @NotBlank(message = "El nombre del curso no puede estar vacío")
+    @Column(nullable = false, length = 150)
+    private String name;
+
+    @NotBlank(message = "La descripción no puede estar vacía")
+    @Column(nullable = false, length = 250)
+    private String description;
+
+    @NotNull(message = "La capacidad máxima es obligatoria")
+    @Column(name = "max_capacity", nullable = false)
+    private Integer maxCapacity;
 
         public Course() {}
 

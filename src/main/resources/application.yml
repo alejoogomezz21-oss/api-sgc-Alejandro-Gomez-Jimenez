@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/coursemanagement?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    username: alejo_dev
+    password: alejo1234
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+
+
+    properties:
+          hibernate:
+            format_sql: true
