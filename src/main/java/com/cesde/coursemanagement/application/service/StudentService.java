@@ -3,11 +3,13 @@ package com.cesde.coursemanagement.application.service;
 import com.cesde.coursemanagement.domain.exception.StudentNotFoundException;
 import com.cesde.coursemanagement.domain.models.Student;
 import com.cesde.coursemanagement.domain.repository.StudentRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-public class StudentService implements StudentRepository {
+@Service
+public class StudentService {
 
     private final StudentRepository studentRepository;
 
@@ -15,9 +17,8 @@ public class StudentService implements StudentRepository {
         this.studentRepository = studentRepository;
     }
 
-    @Override
     public Student save(Student student) {
-        if (student.getId() != null && studentRepository.existsByStudentId(student.getId())) {
+        if (student.getId() != null && studentRepository.existsById(student.getId())) {
             throw new RuntimeException("Student with id: " + student.getId() + " already exists");
         }
 
@@ -28,20 +29,17 @@ public class StudentService implements StudentRepository {
         return studentRepository.save(student);
     }
 
-    @Override
     public Optional<Student> findByStudentId(Long studentId) {
-        if (studentRepository.findByStudentId(studentId).isEmpty()) {
+        if (studentRepository.findById(studentId).isEmpty()) {
             throw new StudentNotFoundException("no Student with student id " + studentId);
         }
-        return studentRepository.findByStudentId(studentId);
+        return studentRepository.findById(studentId);
     }
 
-    @Override
-    public Optional<Student> findBId(Long id) {
-        return studentRepository.findBId(id);
+    public Optional<Student> findById(Long id) {
+        return studentRepository.findById(id);
     }
 
-    @Override
     public List<Student> findAll() {
         if (studentRepository.findAll().isEmpty()) {
             throw new StudentNotFoundException("No students found");
@@ -49,15 +47,13 @@ public class StudentService implements StudentRepository {
         return studentRepository.findAll();
     }
 
-    @Override
     public boolean existsByStudentId(Long studentId) {
-        if (!studentRepository.existsByStudentId(studentId)) {
+        if (!studentRepository.existsById(studentId)) {
             throw new StudentNotFoundException("Student with id: " + studentId + " not found");
         }
-        return studentRepository.existsByStudentId(studentId);
+        return studentRepository.existsById(studentId);
     }
 
-    @Override
     public boolean existsByEmail(String email) {
         if (!studentRepository.existsByEmail(email)) {
             throw new StudentNotFoundException("Student with email: " + email + " not found");
@@ -65,17 +61,15 @@ public class StudentService implements StudentRepository {
         return studentRepository.existsByEmail(email);
     }
 
-    @Override
     public void deleteById(Long id) {
-        if (!studentRepository.existsByStudentId(id)) {
+        if (!studentRepository.existsById(id)) {
             throw new StudentNotFoundException("Student with id: " + id + " not found");
         }
         studentRepository.deleteById(id);
     }
 
-    @Override
     public Optional<Student> update(Student student) {
-        Student existingStudent = studentRepository.findByStudentId(student.getId())
+        Student existingStudent = studentRepository.findById(student.getId())
                 .orElseThrow(() -> new StudentNotFoundException("Estudiante no encontrado con id: " + student.getId()));
 
         if (!existingStudent.getEmail().equals(student.getEmail())) {
@@ -89,6 +83,6 @@ public class StudentService implements StudentRepository {
         existingStudent.setEmail(student.getEmail());
         existingStudent.setBirthDate(student.getBirthDate());
 
-        return studentRepository.update(existingStudent);
+        return Optional.of(studentRepository.save(existingStudent));
     }
 }

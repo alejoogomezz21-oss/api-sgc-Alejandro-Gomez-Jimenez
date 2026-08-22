@@ -1,25 +1,25 @@
 package com.cesde.coursemanagement.domain.repository;
 
 import com.cesde.coursemanagement.domain.models.Student;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface StudentRepository {
+@Repository
+
+public interface StudentRepository extends JpaRepository<Student, Long> {
 
     Student save(Student student);
 
-    Optional<Student> findByStudentId(Long studentId);
-
-    Optional<Student> findBId(Long id);
+    Optional<Student> findById(Long id);
 
     List<Student> findAll();
 
-    boolean existsByStudentId(Long studentId);
+    boolean existsById(Long id);
 
     void deleteById(Long id);
-
-    Optional<Student> update(Student student);
 
     boolean existsByEmail(String email);
 }
