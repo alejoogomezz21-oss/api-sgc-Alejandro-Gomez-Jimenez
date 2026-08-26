@@ -18,6 +18,7 @@ public class StudentController {
     }
 
 
+    // 1. GET PRINCIPAL: Trae toda la lista. Funciona perfecto.
     @GetMapping
     public List<Student> list() {
         return studentRepository.findAll();
@@ -28,23 +29,13 @@ public class StudentController {
         return studentRepository.save(student);
     }
 
-    @DeleteMapping
-    public void deleteById(@RequestParam Long id) {
+    @GetMapping("/{id}")
+    public Student getStudentById(@PathVariable Long id) {
+        return studentRepository.findById(id).orElse(null);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable Long id) {
         studentRepository.deleteById(id);
-    }
-
-    @GetMapping
-    public Student getStudentById(@RequestParam Long id) {
-        return studentRepository.findById(id).get();
-    }
-
-    @PutMapping
-    public Student update(@RequestBody Student student) {
-        return studentRepository.save(student);
-    }
-
-    @PatchMapping
-    public Student patch(@RequestBody Student student) {
-        return studentRepository.save(student);
     }
 }
