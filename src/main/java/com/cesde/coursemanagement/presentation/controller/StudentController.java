@@ -1,41 +1,45 @@
 package com.cesde.coursemanagement.presentation.controller;
 
-
+import com.cesde.coursemanagement.application.service.StudentService;
 import com.cesde.coursemanagement.domain.models.Student;
-import com.cesde.coursemanagement.domain.repository.StudentRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/students")
 public class StudentController {
 
-    private StudentRepository studentRepository;
+    private final StudentService studentService;
 
-    public StudentController(StudentRepository studentRepository) {
-        this.studentRepository = studentRepository;
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
     }
 
-
-    // 1. GET PRINCIPAL: Trae toda la lista. Funciona perfecto.
     @GetMapping
     public List<Student> list() {
-        return studentRepository.findAll();
+        return studentService.findAll();
     }
 
     @PostMapping
     public Student save(@RequestBody Student student) {
-        return studentRepository.save(student);
+        return studentService.save(student);
     }
 
     @GetMapping("/{id}")
-    public Student getStudentById(@PathVariable Long id) {
-        return studentRepository.findById(id).orElse(null);
+    public Optional<Student> getStudentById(@PathVariable Long id) {
+        return studentService.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    public Optional<Student> update(@PathVariable Long id, @RequestBody Student student) {
+        student.setId(id);
+        return studentService.update(student);
     }
 
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
-        studentRepository.deleteById(id);
+        studentService.deleteById(id);
     }
 }
