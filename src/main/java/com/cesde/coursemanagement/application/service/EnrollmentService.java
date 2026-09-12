@@ -6,10 +6,10 @@ import java.util.Optional;
 
 public interface EnrollmentService {
     Enrollment save(Enrollment enrollment);
-    Optional<Enrollment> findByEnrollmentId(Long enrollmentId);
-    Optional<Enrollment> findBId(Long id);
+    Optional<Enrollment> findByEnrollmentId(Long id);
+    Optional<Enrollment> findById(Long id);
     List<Enrollment> findAll();
-    boolean existsByEnrollmentId(Long enrollmentId);
+    boolean existsByEnrollmentId(Long id);
     void deleteById(Long id);
     Optional<Enrollment> update(Enrollment enrollment);
 }

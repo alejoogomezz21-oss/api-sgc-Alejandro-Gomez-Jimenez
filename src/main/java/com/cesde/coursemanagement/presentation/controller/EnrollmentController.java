@@ -29,7 +29,7 @@ public class EnrollmentController {
 
     @GetMapping("/{id}")
     public Optional<Enrollment> getEnrollmentById(@PathVariable Long id) {
-        return enrollmentService.findBId(id);
+        return enrollmentService.findById(id);
     }
 
     @PutMapping("/{id}")

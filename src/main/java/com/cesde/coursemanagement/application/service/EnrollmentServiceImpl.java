@@ -19,44 +19,45 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     public Enrollment save(Enrollment enrollment) {
-        if (enrollment.getId() != null && enrollmentRepository.existsByEnrollmentId(enrollment.getId())) {
+        if (enrollment.getId() != null && enrollmentRepository.existsById(enrollment.getId())) {
             throw new RuntimeException("Enrollment with id: " + enrollment.getId() + " already exists");
         }
         return enrollmentRepository.save(enrollment);
     }
 
     @Override
-    public Optional<Enrollment> findByEnrollmentId(Long enrollmentId) {
-        if (enrollmentRepository.findByEnrollmentId(enrollmentId).isEmpty()) {
-            throw new EnrollmentNotFoundException(enrollmentId);
+    public Optional<Enrollment> findByEnrollmentId(Long id) {
+        if (enrollmentRepository.findById(id).isEmpty()) {
+            throw new EnrollmentNotFoundException(id);
         }
-        return enrollmentRepository.findByEnrollmentId(enrollmentId);
+        return enrollmentRepository.findById(id);
     }
 
     @Override
-    public Optional<Enrollment> findBId(Long id) {
-        return enrollmentRepository.findBId(id);
+    public Optional<Enrollment> findById(Long id) {
+        return enrollmentRepository.findById(id);
     }
 
     @Override
     public List<Enrollment> findAll() {
-        if (enrollmentRepository.findAll().isEmpty()) {
+        List<Enrollment> enrollments = enrollmentRepository.findAll();
+        if (enrollments.isEmpty()) {
             throw new RuntimeException("No enrollments found");
         }
-        return enrollmentRepository.findAll();
+        return enrollments;
     }
 
     @Override
-    public boolean existsByEnrollmentId(Long enrollmentId) {
-        if (!enrollmentRepository.existsByEnrollmentId(enrollmentId)) {
-            throw new EnrollmentNotFoundException(enrollmentId);
+    public boolean existsByEnrollmentId(Long id) {
+        if (!enrollmentRepository.existsById(id)) {
+            throw new EnrollmentNotFoundException(id);
         }
-        return enrollmentRepository.existsByEnrollmentId(enrollmentId);
+        return enrollmentRepository.existsById(id);
     }
 
     @Override
     public void deleteById(Long id) {
-        if (!enrollmentRepository.existsByEnrollmentId(id)) {
+        if (!enrollmentRepository.existsById(id)) {
             throw new EnrollmentNotFoundException(id);
         }
         enrollmentRepository.deleteById(id);
@@ -64,14 +65,15 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     public Optional<Enrollment> update(Enrollment enrollment) {
-        Enrollment existingEnrollment = enrollmentRepository.findByEnrollmentId(enrollment.getId())
+        Enrollment existingEnrollment = enrollmentRepository.findById(enrollment.getId())
                 .orElseThrow(() -> new EnrollmentNotFoundException(enrollment.getId()));
 
-        existingEnrollment.setStudentId(enrollment.getStudentId());
-        existingEnrollment.setCourseId(enrollment.getCourseId());
+        existingEnrollment.setStudent(enrollment.getStudent());
+        existingEnrollment.setCourse(enrollment.getCourse());
         existingEnrollment.setEnrollmentDate(enrollment.getEnrollmentDate());
         existingEnrollment.setStatus(enrollment.getStatus());
 
-        return enrollmentRepository.update(existingEnrollment);
+        Enrollment updated = enrollmentRepository.save(existingEnrollment);
+        return Optional.of(updated);
     }
 }

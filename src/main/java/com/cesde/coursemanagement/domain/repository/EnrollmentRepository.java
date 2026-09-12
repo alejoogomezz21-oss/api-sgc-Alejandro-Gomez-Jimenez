@@ -1,24 +1,17 @@
 package com.cesde.coursemanagement.domain.repository;
 
 import com.cesde.coursemanagement.domain.models.Enrollment;
-import com.cesde.coursemanagement.domain.models.Student;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface EnrollmentRepository {
+@Repository
+public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
-    Enrollment save(Enrollment enrollment);
+    // Como tu campo se llama 'id', usamos findById y existsById (que ya vienen en JpaRepository,
+    // pero si quieres declararlos explícitamente, usa 'Id' con la I mayúscula).
+    Optional<Enrollment> findById(Long id);
 
-    Optional<Enrollment> findByEnrollmentId(Long enrollmentId);
-
-    Optional<Enrollment> findBId(Long id);
-
-    List<Enrollment> findAll();
-
-    boolean existsByEnrollmentId(Long enrollmentId);
-
-    void deleteById(Long id);
-
-    Optional<Enrollment> update(Enrollment enrollment);
+    boolean existsById(Long id);
 }

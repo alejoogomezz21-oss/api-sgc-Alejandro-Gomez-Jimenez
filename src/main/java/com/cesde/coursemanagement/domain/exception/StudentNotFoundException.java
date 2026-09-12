@@ -1,6 +1,6 @@
 package com.cesde.coursemanagement.domain.exception;
 
-public class StudentNotFoundException extends BusinessException {
+public class StudentNotFoundException extends ResourceNotFoundException {
 
     public StudentNotFoundException(String message) {
         super(message);
