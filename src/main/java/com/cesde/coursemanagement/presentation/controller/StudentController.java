@@ -4,6 +4,7 @@ import com.cesde.coursemanagement.application.dto.CreateStudentDto;
 import com.cesde.coursemanagement.application.dto.UpdateStudentDto;
 import com.cesde.coursemanagement.application.dto.response.StudentResponseDto;
 import com.cesde.coursemanagement.application.service.StudentService;
+import com.cesde.coursemanagement.domain.exception.StudentNotFoundException;
 import com.cesde.coursemanagement.domain.models.Student;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -50,8 +51,7 @@ public class StudentController {
     @GetMapping("/{id}")
     public ResponseEntity<StudentResponseDto> getStudentById(@PathVariable Long id) {
         Student student = studentService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado con ID: " + id));
-
+                .orElseThrow(() -> new StudentNotFoundException(id)); // <-- Aquí estaba lanzando RuntimeException
         return ResponseEntity.ok(StudentResponseDto.from(student));
     }
 

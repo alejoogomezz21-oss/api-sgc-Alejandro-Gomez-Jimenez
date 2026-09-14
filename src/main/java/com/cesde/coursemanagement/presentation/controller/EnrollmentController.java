@@ -1,7 +1,16 @@
 package com.cesde.coursemanagement.presentation.controller;
 
+import com.cesde.coursemanagement.application.dto.CreateEnrollmentDto;
+import com.cesde.coursemanagement.application.dto.UpdateEnrollmentDto;
+import com.cesde.coursemanagement.application.dto.response.EnrollmentResponseDto;
 import com.cesde.coursemanagement.application.service.EnrollmentService;
+import com.cesde.coursemanagement.domain.exception.EnrollmentNotFoundException;
+import com.cesde.coursemanagement.domain.models.Course;
 import com.cesde.coursemanagement.domain.models.Enrollment;
+import com.cesde.coursemanagement.domain.models.Student;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,28 +27,62 @@ public class EnrollmentController {
     }
 
     @GetMapping
-    public List<Enrollment> list() {
-        return enrollmentService.findAll();
+    public ResponseEntity<List<EnrollmentResponseDto>> list() {
+        List<EnrollmentResponseDto> response = enrollmentService.findAll().stream()
+                .map(EnrollmentResponseDto::from)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public Enrollment save(@RequestBody Enrollment enrollment) {
-        return enrollmentService.save(enrollment);
+    public ResponseEntity<EnrollmentResponseDto> save(@RequestBody @Valid CreateEnrollmentDto createDto) {
+        Enrollment enrollment = new Enrollment();
+
+        Student student = new Student();
+        student.setId(createDto.studentId());
+        enrollment.setStudent(student);
+
+        Course course = new Course();
+        course.setId(createDto.courseId());
+        enrollment.setCourse(course);
+
+        enrollment.setEnrollmentDate(createDto.enrollmentDate());
+        enrollment.setStatus(com.cesde.coursemanagement.domain.models.EnrollmentStatus.valueOf(createDto.status()));
+
+        Enrollment saved = enrollmentService.save(enrollment);
+        return new ResponseEntity<>(EnrollmentResponseDto.from(saved), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public Optional<Enrollment> getEnrollmentById(@PathVariable Long id) {
-        return enrollmentService.findById(id);
+    public ResponseEntity<EnrollmentResponseDto> getEnrollmentById(@PathVariable Long id) {
+        Enrollment enrollment = enrollmentService.findById(id)
+                .orElseThrow(() -> new EnrollmentNotFoundException(id));
+        return ResponseEntity.ok(EnrollmentResponseDto.from(enrollment));
     }
 
     @PutMapping("/{id}")
-    public Optional<Enrollment> update(@PathVariable Long id, @RequestBody Enrollment enrollment) {
+    public ResponseEntity<EnrollmentResponseDto> update(@PathVariable Long id, @RequestBody @Valid UpdateEnrollmentDto updateDto) {
+        Enrollment enrollment = new Enrollment();
         enrollment.setId(id);
-        return enrollmentService.update(enrollment);
+
+        Student student = new Student();
+        student.setId(updateDto.studentId());
+        enrollment.setStudent(student);
+
+        Course course = new Course();
+        course.setId(updateDto.courseId());
+        enrollment.setCourse(course);
+
+        Enrollment updated = enrollmentService.update(enrollment)
+                .orElseThrow(() -> new EnrollmentNotFoundException(id));
+        return ResponseEntity.ok(EnrollmentResponseDto.from(updated));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        enrollmentService.findById(id)
+                .orElseThrow(() -> new EnrollmentNotFoundException(id));
         enrollmentService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

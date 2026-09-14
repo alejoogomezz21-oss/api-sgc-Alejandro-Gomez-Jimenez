@@ -34,7 +34,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Optional<Course> findBId(Long id) {
+    public Optional<Course> findById(Long id) {
         return courseRepository.findById(id);
     }
 

@@ -7,7 +7,7 @@ import java.util.Optional;
 public interface CourseService {
     Course save(Course course);
     Optional<Course> findByCourseId(Long courseId);
-    Optional<Course> findBId(Long id);
+    Optional<Course> findById(Long id);
     List<Course> findAll();
     boolean existsByCourseId(Long courseId);
     void deleteById(Long id);
